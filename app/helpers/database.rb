@@ -1,5 +1,3 @@
-require_relative 'hash'	
-
 class Database
 	# The database to use
 	@@db = SQLite3::Database.new 'development.db'
@@ -7,7 +5,7 @@ class Database
 	@@db.results_as_hash = true
 
 	# The db
-	def self.db 
+	def self.db
 		@@db
 	end
 
