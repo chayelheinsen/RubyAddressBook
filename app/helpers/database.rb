@@ -1,21 +1,38 @@
-class Database
-	@@db = SQLite3::Database.new 'development.db'
+require_relative 'hash'	
 
+class Database
+	# The database to use
+	@@db = SQLite3::Database.new 'development.db'
+	# We want results to come back as a hash instead of an array
+	@@db.results_as_hash = true
+
+	# The db
 	def self.db 
 		@@db
 	end
 
+	# Returns all ros for a given table
+	# table - The name of the table
+	# search - The string to search for.
+	# property - The column name.
 	def self.select_all(table, search = nil, property = nil)
-		if search.nil?	
-			@@db.execute "SELECT * FROM #{table}"
+		arr = nil
+
+		if search.nil?
+			arr = @@db.execute "SELECT * FROM #{table}"
 		else
-			@@db.execute "SELECT * FROM #{table} WHERE #{property} LIKE ?", search
+			arr = @@db.execute "SELECT * FROM #{table} WHERE #{property} LIKE ?", search
+		end
+
+		arr.each do |row|
+			row.remove_digit_keys!
 		end
 	end
 
 	def self.select(id, table)
 		begin
-			row = @@db.get_first_row "SELECT * FROM #{table} WHERE id = ?", id 
+			row = @@db.get_first_row "SELECT * FROM #{table} WHERE id = ?", id
+			row.delete_digit_keys!
 			return row
 		rescue SQLite3::Exception => e
 			puts "Exception occurred"
@@ -30,8 +47,18 @@ class Database
 	def self.select_last(table)
 		begin
 			row = @@db.get_first_row "SELECT * FROM #{table} ORDER BY id DESC LIMIT 1"
+			row.delete_digit_keys!
 			return row
 		rescue SQLite3::Exception => e
+			puts "Exception occurred"
+    		puts e
+		end
+	end
+
+	def self.create(sql)
+		begin
+	    	@@db.execute sql
+	    rescue SQLite3::Exception => e
 			puts "Exception occurred"
     		puts e
 		end
