@@ -25,14 +25,16 @@ class Database
 		end
 
 		arr.each do |row|
-			row.remove_digit_keys!
+			Database.remove_digit_keys! row
+			#row.remove_digit_keys!
 		end
 	end
 
 	def self.select(id, table)
 		begin
 			row = @@db.get_first_row "SELECT * FROM #{table} WHERE id = ?", id
-			row.delete_digit_keys!
+			Database.remove_digit_keys! row
+			#row.delete_digit_keys!
 			return row
 		rescue SQLite3::Exception => e
 			puts "Exception occurred"
@@ -47,7 +49,8 @@ class Database
 	def self.select_last(table)
 		begin
 			row = @@db.get_first_row "SELECT * FROM #{table} ORDER BY id DESC LIMIT 1"
-			row.delete_digit_keys!
+			Database.remove_digit_keys! row
+			#row.delete_digit_keys!
 			return row
 		rescue SQLite3::Exception => e
 			puts "Exception occurred"
@@ -93,5 +96,13 @@ class Database
 			puts "Exception occurred"
     		puts e
 		end
+	end
+
+	private
+
+	def self.remove_digit_keys!(row)
+		row.delete_if do |key, value| 
+		key.to_s.match(/\d/)
+	end
 	end
 end
