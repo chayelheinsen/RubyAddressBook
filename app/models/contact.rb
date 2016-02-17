@@ -1,5 +1,3 @@
-require 'json'
-
 class Contact
     def initialize(id, name, phone_number)  
         # Instance variables 
@@ -19,6 +17,13 @@ class Contact
     def from_json! string
         JSON.load(string).each do |var, val|
             self.instance_variable_set var, val
+        end
+    end
+
+    def update_attributes(hash)
+        hash.each do |key, value|
+            m = "#{key}="
+            self.send(m, value) if self.respond_to?(m)
         end
     end
 end

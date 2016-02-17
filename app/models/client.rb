@@ -1,4 +1,3 @@
-require_relative '../helpers/database'
 require_relative 'contact'
 
 class Client < Contact
@@ -9,21 +8,20 @@ class Client < Contact
 	    @budget = budget
   	end
 
-	def self.createTable
-		Database.db.execute "CREATE TABLE IF NOT EXISTS Client(id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING, phone_number STRING, project_name STRING, budget INTEGER)"
-	end
-
-	def self.tableName
-		createTable
+	def self.table_name
 		'Client'
 	end
 
-	def self.all
-		Database.selectAll tableName
+	def self.all(name = nil)
+		if name.nil?
+			Database.select_all table_name
+		else
+			Database.select_all table_name, name, 'name'
+		end
 	end
 
 	def self.find(id)
-		obj = Database.select id, tableName
+		obj = Database.select id, table_name
 		if obj
 			Client.new obj[0], obj[1], obj[2], obj[3], obj[4]
 		end
@@ -31,14 +29,16 @@ class Client < Contact
 
 	def self.create(hash)
 		Database.db.execute "INSERT INTO Client(name,phone_number,project_name,budget) VALUES(?,?,?,?)", hash["name"], hash["phone_number"], hash["project_name"], hash["budget"]
-		obj = Database.selectLast tableName
+		obj = Database.select_last table_name
 		Client.new obj[0], obj[1], obj[2], obj[3], obj[4]
 	end
 
 	def update(hash)
-		hash.each do |key, value|
-			Database.update self.id, key, value, Client.tableName
-		end
-		Client.find self.id
+		Database.update @id, hash, Client.table_name
+		update_attributes hash
+	end
+
+	def delete
+		Database.delete @id, Client.table_name
 	end
 end
