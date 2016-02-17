@@ -2,7 +2,7 @@
 A simple address book api written in ruby with sinatra.
 
 # Getting Started
-This was tested using Ruby 2.2.2
+This was tested using Ruby 2.2.2 Don't have Ruby 2.2.2? You can use [RVM](https://rvm.io) (we used RVM).
 
 1. Clone this repo and cd into it.
 2. Run ```bundle install``` Note. This might throw an error if you don't have bunlder. Simply run ```gem install bundler``` and try again.
