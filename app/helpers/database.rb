@@ -101,8 +101,10 @@ class Database
 	private
 
 	def self.remove_digit_keys!(row)
-		row.delete_if do |key, value| 
-		key.to_s.match(/\d/)
-	end
+		if row
+			row.delete_if do |key, value| 
+			key.to_s.match(/\d/)
+			end
+		end
 	end
 end
